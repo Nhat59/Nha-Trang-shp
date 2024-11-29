@@ -36,7 +36,7 @@ global {
 			} }
 		create charging_station from: shape_file(resources_dir + "output_shapefile.shp");
 
-		do update_road_scenario(0);
+//		do update_road_scenario(0);
 		do update_car_population(cars);
 		do update_elecar_population(elecars);
 	}
