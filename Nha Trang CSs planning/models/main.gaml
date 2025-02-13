@@ -60,7 +60,7 @@ global {
 
 	// Initialization
 	string resources_dir <- "../includes/";
-	shape_file buildings_shape_file <- shape_file(resources_dir + "new_building.shp");
+	shape_file buildings_shape_file <- shape_file(resources_dir + "test_building.shp");
 	geometry shape <- envelope(buildings_shape_file);
 	int cars <- 100;
 	int elecars <- 50;
@@ -70,7 +70,7 @@ global {
 	init {
 		// Load roads
 		do clear_data;
-		create road from: shape_file(resources_dir + "hi.shp");
+		create road from: shape_file(resources_dir + "test_road.shp");
 		loop r over: road {
 				create road with: (shape: polyline(reverse(r.shape.points)), name: r.name, type: r.type);
 		}
@@ -84,7 +84,7 @@ global {
 	
 		open_roads <- list(road);
 		
-		create charging_station from: shape_file(resources_dir + "temporary_cs.shp");
+		create charging_station from: shape_file(resources_dir + "test_cs.shp");
 		do update_road(0);
 		write "intersection " + length(intersection);
 		//write "Số lượng charging_station đã đọc: " + length(charging_station);
