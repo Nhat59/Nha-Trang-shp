@@ -10,7 +10,7 @@ global {
 species intersection schedules: [] skills: [intersection_skill] {
 
 	aspect base {
-		draw circle(40) color: #green;
+		draw circle(10) color: #green;
 	}
 	//intersection closest_intersection <- intersection closest_to self;	
 }
@@ -23,7 +23,7 @@ species charging_station {
 	int served_customer <- 0;
 
 	aspect base {
-		draw circle(30) color: #purple;
+		draw circle(10) color: #purple;
 	}
 
 	action add_to_queue (elecar ev) {
@@ -138,7 +138,7 @@ species elecar parent: vehicle {
 	point target_station;
 	bool is_charging <- false;
 	float battery_level <- float(rnd(70, 100));
-	float charge_rate <- 1.0;
+	float charge_rate <- 5.0;
 
 	//reflex check_battery when: battery_level < 30 and needs_charging = false{
 	reflex choose_path when: final_target = nil and !needs_charging {
@@ -168,13 +168,14 @@ species elecar parent: vehicle {
 		current_station <- all_stations with_min_of (each distance_to self);
 		if (current_station != nil) {
 			do compute_path graph: road_network target: current_station.closest_intersection;
+			write current_station.closest_intersection;
 		} else {
 			write ""+self+" khong tim thay charging station";
 		}
 
 	}
 
-	reflex charge when: current_station != nil and final_target = nil and needs_charging {
+	reflex charge when: current_station != nil and self.location = current_station.location and needs_charging {
 		temp_target <- target;
 		do start_charging;
 	}

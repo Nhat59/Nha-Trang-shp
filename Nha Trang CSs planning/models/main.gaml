@@ -48,14 +48,16 @@ global {
 	rgb color_inner_building <- rgb(100, 100, 100);
 	rgb color_outer_building <- rgb(60, 60, 60);
 	rgb color_charging_station <- #yellow; // Example for charging stations
-
+	
 
 	// Initialization
+	list <charging_station> all_stations <- [];
+	
 	string resources_dir <- "../includes/";
 	shape_file buildings_shape_file <- shape_file(resources_dir + "test_building1.shp");
 	geometry shape <- envelope(buildings_shape_file);
-	int cars <- 20;
-	int elecars <- 30;
+	int cars <- 2;
+	int elecars <- 2;
 	int total_cars <- cars + elecars;
 	float percents <- elecars / total_cars;
 	int motos <- 0;
@@ -77,7 +79,7 @@ global {
 		}
 
 		open_roads <- list(road);
-		create charging_station from: shape_file(resources_dir + "test_cs1.shp");
+		do create_all_station_list;
 		do update_road(0);
 		write "intersection " + length(intersection);
 		//write "Số lượng charging_station đã đọc: " + length(charging_station);
@@ -147,7 +149,14 @@ global {
 		}
 
 	}
-
+	
+	action create_all_station_list {
+		create charging_station from: shape_file(resources_dir + "test_cs1.shp");
+		loop cs over: list(charging_station) {
+			add cs to: all_stations;
+		}
+	}
+	
 	action update_EV_population (float percent) {
 		int target_ev_count <- int(percent * total_cars);
 		int target_private_ev <- int(target_ev_count / 2);
@@ -155,7 +164,7 @@ global {
 		int current_private_ev <- length(private_ev);
 		int delta_private_ev <- target_private_ev - current_private_ev;
 		if (delta_private_ev > 0) {
-			create private_ev number: delta_private_ev;
+			create private_ev number: delta_private_ev with: (all_stations: all_stations);
 		} else if (delta_private_ev < 0) {
 			ask (-delta_private_ev) among private_ev {
 				do die;
@@ -166,7 +175,7 @@ global {
 		int current_taxi_ev <- length(taxi_ev);
 		int delta_taxi_ev <- target_taxi_ev - current_taxi_ev;
 		if (delta_taxi_ev > 0) {
-			create taxi_ev number: delta_taxi_ev;
+			create taxi_ev number: delta_taxi_ev with: (all_stations: all_stations);
 		} else if (delta_taxi_ev < 0) {
 			ask (-delta_taxi_ev) among taxi_ev {
 				do die;
